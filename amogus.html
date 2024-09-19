@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Among Us: The Sus Page</title>
+    <style>
+        body {
+            background-color: #141414;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 50px;
+        }
+        a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 20px;
+        }
+        a:hover {
+            color: #ff0000;
+        }
+        .hidden-link {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to the Among Us Sus Page!</h1>
+    <p>Everything is <a href="#">clickable</a> here. Be careful, there might be an imposter among us!</p>
+    
+    <p>Did you see the latest <a href="#">Among Us update</a>? It's very <a href="#">suspicious</a>!</p>
+    
+    <p>What do you think about the new <a href="#">skins</a>? Are they <a href="#">too sus</a>?</p>
+    
+    <p>Play with your friends and see who's the real <a href="#">imposter</a>!</p>
+    
+    <div class="hidden-link">
+        <a href="averybigsecret.html">This is the real secret!</a>
+    </div>
+
+    <script>
+        // Randomly reveal the hidden link after a few seconds
+        setTimeout(() => {
+            document.querySelector('.hidden-link').style.display = 'block';
+            alert("The hidden link has been revealed! Click around!");
+        }, 5000); // 5 seconds delay
+    </script>
+
+</body>
+</html>
