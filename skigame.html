@@ -1,0 +1,40 @@
+<head>
+    <title>Jumper Game</title>
+</head>
+<style>
+canvas {
+
+    border-style: solid;;
+}
+
+
+</style>
+
+<body>
+<h1>Jumper Game</h1>
+<canvas id="window" width="1200" height="675"></canvas>
+
+<script>
+const canvas = document.getElementById("window")
+const ctx = canvas.getContext("2d");
+
+var y = 100;
+
+ctx.fillStyle = "blue";
+
+document.onkeydown = function(event) {
+
+    if(event.key === arrowup) {
+
+        y += 10
+
+    }
+
+}
+
+
+</script>
+
+
+
+</body>

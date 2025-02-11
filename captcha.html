@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<head>
+
+
+
+    <style>
+
+        canvas {
+
+            border-style: solid;
+
+
+        }
+
+
+
+    </style>
+</head>
+
+<body>
+
+    <canvas id="gamewindow" width="500" height="500"></canvas>
+
+<script>
+    // Setup stuff
+    const canvas = document.getElementById("gamewindow");
+    const ctx = canvas.getContext("2d");
+
+    let ypos = 200;
+    let velocity = 0; 
+    const gravity = 2; 
+    const jumpStrength = -20; 
+
+    document.onkeydown = function(event) {
+        if (event.key === "ArrowUp") {
+            jump();
+        }
+    };
+
+    function jump() {
+        if (ypos >= 450) {
+            velocity = jumpStrength;
+        }
+    }
+
+    function updateY() {
+        velocity += gravity;
+        ypos += velocity;
+
+        if (ypos > 450) {
+            ypos = 450;
+            velocity = 0; 
+        }
+
+        draw();
+    }
+
+    function draw() {
+        
+        ctx.fillStyle = "skyblue";
+        ctx.fillRect(0, 0, 500, 500);
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(50, ypos, 50, 50);
+    }
+
+    setInterval(updateY, 40);
+</script>

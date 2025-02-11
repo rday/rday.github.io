@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Minecraft Recreation</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #87CEEB; }
+        canvas { display: block; margin: 0; background-color: #87CEEB; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const blockSize = 40; // Size of each block
+        const rows = 20; // Number of rows of blocks
+        const cols = 30; // Number of columns of blocks
+        canvas.width = cols * blockSize;
+        canvas.height = rows * blockSize;
+
+        // Block types (Grass, Dirt, Stone)
+        const blockTypes = ["#32CD32", "#8B4513", "#A9A9A9"]; // Green for grass, brown for dirt, gray for stone
+        const world = []; // Store the world blocks
+
+        // Player setup
+        const player = {
+            x: 5 * blockSize,
+            y: 8 * blockSize,  // Start with the player higher on the screen
+            width: blockSize,
+            height: blockSize,
+            velocityY: 0,
+            speed: 5,
+            gravity: 0.5,
+            jumpPower: -12,
+            grounded: false
+        };
+
+        // Initialize the world with random terrain (grass, dirt, stone)
+        function generateWorld() {
+            for (let row = 0; row < rows; row++) {
+                world[row] = [];
+                for (let col = 0; col < cols; col++) {
+                    if (row < 5) {
+                        world[row][col] = 0; // Grass
+                    } else if (row < 10) {
+                        world[row][col] = 1; // Dirt
+                    } else {
+                        world[row][col] = 2; // Stone
+                    }
+                }
+            }
+        }
+
+        // Draw the world
+        function drawWorld() {
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const blockType = world[row][col];
+                    ctx.fillStyle = blockTypes[blockType];
+                    ctx.fillRect(col * blockSize, row * blockSize, blockSize, blockSize);
+                }
+            }
+        }
+
+        // Draw the player
+        function drawPlayer() {
+            ctx.fillStyle = "#FF0000"; // Red for the player
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        // Player controls and movement
+        function handlePlayerMovement() {
+            if (leftPressed && player.x > 0) {
+                player.x -= player.speed;
+            }
+            if (rightPressed && player.x + player.width < canvas.width) {
+                player.x += player.speed;
+            }
+            if (upPressed && player.grounded) {
+                player.velocityY = player.jumpPower;
+                player.grounded = false;
+            }
+        }
+
+        // Apply gravity and update player position
+        function updatePlayer() {
+            player.velocityY += player.gravity;
+            player.y += player.velocityY;
+
+            // Check if player is grounded (colliding with blocks below)
+            player.grounded = false;
+            for (let row = Math.floor(player.y / blockSize); row < rows; row++) {
+                for (let col = Math.floor(player.x / blockSize); col < Math.floor((player.x + player.width) / blockSize); col++) {
+                    if (world[row] && world[row][col] !== undefined) {
+                        const blockType = world[row][col];
+                        if (blockType !== 0 && player.y + player.height <= row * blockSize + blockSize && player.y + player.height + player.velocityY >= row * blockSize) {
+                            player.velocityY = 0;
+                            player.y = row * blockSize - player.height; // Ensure player lands on the block
+                            player.grounded = true;
+                            break;
+                        }
+                    }
+                }
+                if (player.grounded) break;
+            }
+
+            // Prevent falling off the screen
+            if (player.y + player.height > canvas.height) {
+                player.y = canvas.height - player.height;
+                player.velocityY = 0;
+                player.grounded = true;
+            }
+        }
+
+        // Keypress tracking
+        let leftPressed = false, rightPressed = false, upPressed = false;
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') leftPressed = true;
+            if (e.key === 'ArrowRight') rightPressed = true;
+            if (e.key === 'ArrowUp') upPressed = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowLeft') leftPressed = false;
+            if (e.key === 'ArrowRight') rightPressed = false;
+            if (e.key === 'ArrowUp') upPressed = false;
+        });
+
+        // Game loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+
+            // Update and draw the world and player
+            drawWorld();
+            handlePlayerMovement();
+            updatePlayer();
+            drawPlayer();
+
+            requestAnimationFrame(gameLoop); // Loop the game
+        }
+
+        // Start the game
+        generateWorld();
+        gameLoop();
+    </script>
+</body>
+</html>
