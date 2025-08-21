@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Better Photo Sphere</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    canvas {
+      background: #eef;
+      display: block;
+    }
+    .zoom-buttons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .zoom-buttons button {
+      padding: 5px 10px;
+      font-size: 16px;
+    }
+    #imageModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+    }
+    #imageModal img {
+      max-width: 90%;
+      max-height: 90%;
+      transform-origin: center;
+      transition: transform 0.2s ease;
+    }
+    #imageModal .close-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 20px;
+      color: white;
+      cursor: pointer;
+    }
+    .label-toggle {
+      position: absolute;
+      top: 100px;
+      right: 10px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="position: absolute; top: 10px; left: 10px; margin: 0; padding: 10px; background: white; z-index: 10;">Better Photo Sphere</h1>
+  <canvas id="mapCanvas"></canvas>
+  <div class="zoom-buttons">
+    <button onclick="zoomMap(1.2)">+</button>
+    <button onclick="zoomMap(0.8)">-</button>
+  </div>
+  <div class="label-toggle">
+    <label><input type="checkbox" id="toggleLabels" checked> Show Labels</label>
+  </div>
+  <div id="imageModal" onclick="closeModal(event)">
+    <span class="close-button">✕</span>
+    <img id="zoomedImage" src="" alt="Zoomable" />
+  </div>
+  <script>
+    const canvas = document.getElementById('mapCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+
+    let mapImg = new Image();
+    mapImg.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Blank_US_Map_%28states_only%29.svg/1280px-Blank_US_Map_%28states_only%29.svg.png';
+
+    let scale = 1, offsetX = 0, offsetY = 0, drag = false;
+    let startX, startY;
+
+    const buttons = [
+      { x: 765, y: 280, image: 'newrivergorge.jpg', label: 'Fayetteville, WV' },
+      { x: 828, y: 255, image: 'culdesac.jpeg', label: 'Reston, VA' },
+      { x: 880, y: 200, image: 'statueofliberty.jpg', label: 'New York, NY' },
+      { x: 265, y: 140, image: 'yellowstone.jpg', label: 'Yellowstone' },
+      { x: 835, y: 250, image: 'bethesda.jpg', label: 'Bethesda, MD' },
+      { x: 847, y: 240, image: 'timonium.jpg', label: 'Timonium, MD' },
+    ];
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(offsetX, offsetY);
+      ctx.scale(scale, scale);
+      ctx.drawImage(mapImg, 0, 0, 1000, 600);
+      buttons.forEach(btn => {
+        const pinX = btn.x;
+        const pinY = btn.y;
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+        ctx.translate(offsetX + pinX * scale, offsetY + pinY * scale);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-5, 10);
+        ctx.lineTo(5, 10);
+        ctx.closePath();
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+        if (document.getElementById('toggleLabels').checked) {
+          ctx.fillStyle = 'black';
+          ctx.font = '14px sans-serif';
+          ctx.fillText(btn.label, 8, 5);
+        }
+        ctx.restore();
+      });
+      ctx.restore();
+    }
+
+    mapImg.onload = draw;
+
+    canvas.addEventListener('mousedown', e => {
+      drag = true;
+      startX = e.clientX - offsetX;
+      startY = e.clientY - offsetY;
+    });
+
+    canvas.addEventListener('mouseup', () => drag = false);
+    canvas.addEventListener('mouseleave', () => drag = false);
+    canvas.addEventListener('mousemove', e => {
+      if (drag) {
+        offsetX = e.clientX - startX;
+        offsetY = e.clientY - startY;
+        draw();
+      }
+    });
+
+    canvas.addEventListener('click', e => {
+      const mx = (e.clientX - offsetX) / scale;
+      const my = (e.clientY - offsetY) / scale;
+      for (let btn of buttons) {
+        const dx = mx - btn.x;
+        const dy = my - btn.y;
+        if (dx * dx + dy * dy < 100) {
+          document.getElementById('zoomedImage').src = btn.image;
+          document.getElementById('zoomedImage').style.transform = 'scale(1)';
+          imageZoom = 1;
+          document.getElementById('imageModal').style.display = 'flex';
+          return;
+        }
+      }
+    });
+
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const zoom = e.deltaY < 0 ? 1.03 : 0.97;
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      const worldX = (mouseX - offsetX) / scale;
+      const worldY = (mouseY - offsetY) / scale;
+      scale *= zoom;
+      scale = Math.max(1.5, Math.min(scale, 6)); // clamp scale between 0.5x and 5x
+      offsetX = mouseX - worldX * scale;
+      offsetY = mouseY - worldY * scale;
+      draw();
+    });
+
+    function zoomMap(factor) {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const x = (centerX - offsetX) / scale;
+      const y = (centerY - offsetY) / scale;
+      scale *= factor;
+      offsetX = centerX - x * scale;
+      offsetY = centerY - y * scale;
+      draw();
+    }
+
+    function closeModal(event) {
+      if (event.target.id === 'imageModal' || event.target.classList.contains('close-button')) {
+        document.getElementById('imageModal').style.display = 'none';
+      }
+    }
+
+    let imageZoom = 1;
+    document.getElementById('zoomedImage').addEventListener('wheel', (e) => {
+      e.preventDefault();
+      imageZoom *= e.deltaY < 0 ? 1.1 : 0.9;
+      imageZoom = Math.max(0.5, Math.min(imageZoom, 5));
+      document.getElementById('zoomedImage').style.transform = `scale(${imageZoom})`;
+    });
+
+    document.getElementById('toggleLabels').addEventListener('change', draw);
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      draw();
+    });
+  </script>
+</body>
+</html>

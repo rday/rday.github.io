@@ -1,40 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Jumper Game</title>
+  <meta charset="UTF-8">
+  <title>Mercator Projection Distortion</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    canvas {
+      margin-top: 20px;
+      border: 1px solid #444;
+    }
+  </style>
 </head>
-<style>
-canvas {
-
-    border-style: solid;;
-}
-
-
-</style>
-
 <body>
-<h1>Jumper Game</h1>
-<canvas id="window" width="1200" height="675"></canvas>
+  <h1>Mercator Projection Distortion</h1>
+  <input type="file" id="upload" accept="image/*" />
+  <canvas id="canvas"></canvas>
 
-<script>
-const canvas = document.getElementById("window")
-const ctx = canvas.getContext("2d");
+  <script>
+    const upload = document.getElementById("upload");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
 
-var y = 100;
-
-ctx.fillStyle = "blue";
-
-document.onkeydown = function(event) {
-
-    if(event.key === arrowup) {
-
-        y += 10
-
+    // Mercator projection formula
+    function mercatorY(lat) {
+      const rad = lat * (Math.PI / 180);
+      return Math.log(Math.tan(Math.PI / 4 + rad / 2));
     }
 
-}
+    upload.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
+      const img = new Image();
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
 
-</script>
+        canvas.width = width;
+        canvas.height = height;
 
+        // Draw original image to a temp canvas
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = width;
+        tempCanvas.height = height;
+        const tempCtx = tempCanvas.getContext("2d");
+        tempCtx.drawImage(img, 0, 0);
 
+        // Cache Mercator range
+        const latMin = -85;
+        const latMax = 85;
+        const mercMin = mercatorY(latMin);
+        const mercMax = mercatorY(latMax);
 
+        // Apply Mercator distortion vertically
+        for (let y = 0; y < height; y++) {
+          // Normalized Mercator Y (0 = bottom, 1 = top)
+          const t = y / height;
+          const mercY = mercMin + t * (mercMax - mercMin);
+
+          // Inverse Mercator to get latitude
+          const lat = (2 * Math.atan(Math.exp(mercY)) - Math.PI / 2) * (180 / Math.PI);
+
+          // Map that latitude back to source image Y
+          const srcY = Math.floor((lat + 90) / 180 * height);
+
+          if (srcY >= 0 && srcY < height) {
+            const row = tempCtx.getImageData(0, srcY, width, 1);
+            ctx.putImageData(row, 0, y);
+          }
+        }
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  </script>
 </body>
+</html>
