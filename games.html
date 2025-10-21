@@ -1,13 +1,238 @@
-<div>
-    <a href="index.html"><img src="logo.png" href="www.theoday.net/index.html" alt="logo"></a>
+<style>
+body {
+  font-family: sans-serif;
+}
+.textareas {
+  display: flex;
+  border: solid;
+  height: 70%;
+  width: 30%;
+  border-radius: 16px;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+textarea {
+  width: 80%;
+  display: block;
+  margin: 10px;
+  height: 20%;
+}
+button {
+  background-color: green;
+  border-radius: 5px;
+  padding: 25px;
+  text-decoration:solid;
+  color: white;
+  font-size: 25px;
+  width: 50%;
+  height: 10%;
+  margin: 0 auto;
+  display: block;
+}
+button:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+img {
+  width: 100%;
+  height: 100%;
+}
+.header {
+  text-align: center;
+  z-index: 10;
+  margin-bottom: -20px;
+  font-size: 40px;
+}
+.image-frame {
+  width: 30%;
+  height: 70%;
+  overflow: hidden;
+  border-radius: 20px; /* optional */
+  margin-top: 50px;
+  border: solid;
+  margin-bottom: 50px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+.image-frame img {
+  width: auto;
+  height: 120%;
+}
+.submitButton {
+  align-items: center;
+}
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin: 50px;
+  height: 60%;
+  border: solid;
+  gap: 3%;
+  position: relative; /* allow absolute score box */
+}
+/* Small score box at top center of container */
+.score-box {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  border: 1px solid #444;
+  white-space: nowrap;
+}
+.hidden { display: none !important; }
+</style>
+
+<body>
+  <p class="header">Dateguessr</p>
+
+  <div class="container" id="container">
+    <div class="score-box" id="scoreBox">Round 1/5 — Total: 0</div>
+
+    <div class="image-frame" id="imageFrame">
+      <img id="picture" src="bethesda.jpg">
+    </div>
+
+    <div class="textareas" id="inputsBox">
+      <textarea placeholder="Month (number form)" id="month"></textarea>
+      <textarea placeholder="Day of month" id="day"></textarea>
+      <textarea placeholder="Year (20XX)" id="year"></textarea>
+    </div>
   </div>
 
+  <div class="submitButton" id="submitBox">
+    <button onclick="onSubmit()" disabled id="submitBtn">Submit</button>
+    <p id="score" style="text-align:center;"></p>
+  </div>
+</body>
 
+<script>
+const images = [
+  { src: "timonium.jpg", y: 2025, m: 4, d: 20 },
+  { src: "yellow.jpg",   y: 2024, m: 6, d: 28 },
+  { src: "bethesda.jpg", y: 2023, m: 3, d: 27 }
+];
 
+const pictureEl = document.getElementById("picture");
+const monthEl = document.getElementById("month");
+const dayEl = document.getElementById("day");
+const yearEl = document.getElementById("year");
+const submitBtn = document.getElementById("submitBtn");
+const scoreEl = document.getElementById("score");
+const scoreBoxEl = document.getElementById("scoreBox");
+const imageFrame = document.getElementById("imageFrame");
+const inputsBox = document.getElementById("inputsBox");
+const submitBox = document.getElementById("submitBox");
+const container = document.getElementById("container");
 
-  <body>
+let lastIndex = -1;
+let currentIndex = images.findIndex(i => i.src === pictureEl.src.split('/').pop());
+if (currentIndex === -1) currentIndex = images.length - 1;
 
-<p>If you want games, you're out of luck</p>
+let totalScore = 0;
+let round = 1;
+const maxRounds = 5;
 
+function isValidDateParts(m, d, y) {
+  if (!Number.isInteger(m) || !Number.isInteger(d) || !Number.isInteger(y)) return false;
+  if (m < 1 || m > 12) return false;
+  if (y < 1900 || y > 2100) return false;
+  const dt = new Date(y, m - 1, d);
+  return dt.getFullYear() === y && dt.getMonth() === (m - 1) && dt.getDate() === d;
+}
 
-  </body>
+function updateButtonState() {
+  const m = parseInt(monthEl.value, 10);
+  const d = parseInt(dayEl.value, 10);
+  const y = parseInt(yearEl.value, 10);
+  submitBtn.disabled = !isValidDateParts(m, d, y);
+}
+
+monthEl.addEventListener("input", updateButtonState);
+dayEl.addEventListener("input", updateButtonState);
+yearEl.addEventListener("input", updateButtonState);
+
+function scoreGuess(guess, target) {
+  const oneDay = 24 * 60 * 60 * 1000;
+  const diffDays = Math.abs((guess - target) / oneDay);
+  const raw = 1000 * Math.exp(-diffDays / 365); // exact=1000; ~1y≈368; ~2y≈135
+  return Math.max(0, Math.round(raw));
+}
+
+function showResult(guess, target, score) {
+  const fmt = d => `${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}/${d.getFullYear()}`;
+  scoreEl.textContent = `Score: ${score} — Your guess: ${fmt(guess)} | Actual: ${fmt(target)} — Round ${round}/${maxRounds} — Total: ${totalScore}`;
+  scoreBoxEl.textContent = `Round ${round}/${maxRounds} — Total: ${totalScore}`;
+}
+
+function clearInputs() {
+  monthEl.value = "";
+  dayEl.value = "";
+  yearEl.value = "";
+  updateButtonState();
+}
+
+function changeImage() {
+  let idx;
+  do {
+    idx = Math.floor(Math.random() * images.length);
+  } while (idx === currentIndex);
+  lastIndex = currentIndex;
+  currentIndex = idx;
+  pictureEl.src = images[currentIndex].src;
+}
+
+function endGame() {
+  // Hide game UI, show final message in center
+  imageFrame.classList.add("hidden");
+  inputsBox.classList.add("hidden");
+  submitBox.classList.add("hidden");
+  scoreBoxEl.textContent = `Well done! Final Score: ${totalScore}`;
+  // Optionally also hide container border or change text
+  const doneMsg = document.createElement("p");
+  doneMsg.style.textAlign = "center";
+  doneMsg.style.fontSize = "24px";
+  doneMsg.textContent = "Well done!";
+  container.appendChild(doneMsg);
+}
+
+function onSubmit() {
+  const m = parseInt(monthEl.value, 10);
+  const d = parseInt(dayEl.value, 10);
+  const y = parseInt(yearEl.value, 10);
+  if (!isValidDateParts(m, d, y)) return;
+
+  const guess = new Date(y, m - 1, d);
+  const { y: ty, m: tm, d: td } = images[currentIndex];
+  const target = new Date(ty, tm - 1, td);
+  const score = scoreGuess(guess, target);
+  totalScore += score;
+
+  showResult(guess, target, score);
+
+  if (round >= maxRounds) {
+    endGame();
+    return;
+  }
+
+  round += 1;
+  clearInputs();
+  changeImage();
+  // Update the small score box for the next round display
+  scoreBoxEl.textContent = `Round ${round}/${maxRounds} — Total: ${totalScore}`;
+}
+
+// Initialize UI
+updateButtonState();
+scoreBoxEl.textContent = `Round ${round}/${maxRounds} — Total: ${totalScore}`;
+</script>
