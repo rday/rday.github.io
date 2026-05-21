@@ -1,3 +1,6 @@
+<head>
+<title>Dateguessr</title>
+</head>
 <style>
 body {
   font-family: sans-serif;
@@ -37,8 +40,12 @@ button:disabled {
   opacity: 0.7;
 }
 img {
-  width: 100%;
-  height: 100%;
+  width: 130%;
+  height: auto;
+}
+#picture {
+  width: 115%;
+  height: auto;
 }
 .header {
   text-align: center;
@@ -76,7 +83,6 @@ img {
   gap: 3%;
   position: relative; /* allow absolute score box */
 }
-/* Small score box at top center of container */
 .score-box {
   position: absolute;
   top: -14px;
@@ -91,6 +97,31 @@ img {
   white-space: nowrap;
 }
 .hidden { display: none !important; }
+#playButton {
+  font-size: 30px;
+  padding: 20px 40px;
+  line-height: 1; 
+  display: flex;
+  align-items: center;  
+  justify-content: center;
+}
+
+.howto {
+  font-size: 110%;
+  padding: 5%;
+  border: solid;
+  margin-left: 5%;
+  margin-right: 5%;
+  line-height: 150%;
+}
+
+.credit {
+  font-size: 55%;
+  color: gray;
+  text-decoration: wavy;
+  margin: 20px;
+  margin-left: 40px;
+}
 </style>
 
 <body>
@@ -100,8 +131,10 @@ img {
     <div class="score-box" id="scoreBox">Round 1/5 — Total: 0</div>
 
     <div class="image-frame" id="imageFrame">
-      <img id="picture" src="bethesda.jpg">
-    </div>
+  <button id="playButton" style="font-size: 30px; padding: 20px 40px;">Play</button>
+  <img id="picture" class="hidden">
+</div>
+
 
     <div class="textareas" id="inputsBox">
       <textarea placeholder="Month (number form)" id="month"></textarea>
@@ -114,13 +147,20 @@ img {
     <button onclick="onSubmit()" disabled id="submitBtn">Submit</button>
     <p id="score" style="text-align:center;"></p>
   </div>
+
+<p class="howto"> How to play: Press the play button to begin. Enter the month, day, and year you think the image was taken in the
+  marked fields. Once you're finished, press submit and a score will be returned to you depending on how close you were.
+  You have 5 rounds to play, to start a new game just refresh the page. Try to make it to 5000 points! </p>
+<p class="credit">game coded by atlascolumn</p>
 </body>
 
 <script>
 const images = [
   { src: "timonium.jpg", y: 2025, m: 4, d: 20 },
   { src: "yellow.jpg",   y: 2024, m: 6, d: 28 },
-  { src: "bethesda.jpg", y: 2023, m: 3, d: 27 }
+  { src: "bethesda.jpg", y: 2025, m: 2, d: 26 },
+  { src: "dg_mar31.jpg", y: 2025, m: 3, d: 31 },
+  { src: "dg_jan29.jpg", y: 2025, m: 1, d: 29 },
 ];
 
 const pictureEl = document.getElementById("picture");
@@ -134,14 +174,30 @@ const imageFrame = document.getElementById("imageFrame");
 const inputsBox = document.getElementById("inputsBox");
 const submitBox = document.getElementById("submitBox");
 const container = document.getElementById("container");
+const playButton = document.getElementById("playButton");
+
 
 let lastIndex = -1;
-let currentIndex = images.findIndex(i => i.src === pictureEl.src.split('/').pop());
-if (currentIndex === -1) currentIndex = images.length - 1;
+let currentIndex = -1;
+const usedIndices = new Set();
+
+
 
 let totalScore = 0;
 let round = 1;
 const maxRounds = 5;
+
+function startGame() {
+  currentIndex = Math.floor(Math.random() * images.length);
+  usedIndices.add(currentIndex);
+  pictureEl.src = images[currentIndex].src;
+
+  playButton.classList.add("hidden");
+  pictureEl.classList.remove("hidden");
+
+  scoreBoxEl.textContent = `Round ${round}/${maxRounds} — Total: ${totalScore}`;
+}
+
 
 function isValidDateParts(m, d, y) {
   if (!Number.isInteger(m) || !Number.isInteger(d) || !Number.isInteger(y)) return false;
@@ -183,12 +239,15 @@ function clearInputs() {
 }
 
 function changeImage() {
-  let idx;
-  do {
-    idx = Math.floor(Math.random() * images.length);
-  } while (idx === currentIndex);
-  lastIndex = currentIndex;
-  currentIndex = idx;
+  const unused = images.map((_, i) => i).filter(i => !usedIndices.has(i));
+
+  if (unused.length === 0) {
+    endGame();
+    return;
+  }
+  const nextIndex = unused[Math.floor(Math.random() * unused.length)];
+  currentIndex = nextIndex;
+  usedIndices.add(currentIndex);
   pictureEl.src = images[currentIndex].src;
 }
 
@@ -228,11 +287,11 @@ function onSubmit() {
   round += 1;
   clearInputs();
   changeImage();
-  // Update the small score box for the next round display
   scoreBoxEl.textContent = `Round ${round}/${maxRounds} — Total: ${totalScore}`;
 }
 
-// Initialize UI
 updateButtonState();
 scoreBoxEl.textContent = `Round ${round}/${maxRounds} — Total: ${totalScore}`;
+playButton.addEventListener("click", startGame);
+
 </script>
