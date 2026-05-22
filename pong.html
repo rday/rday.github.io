@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<style>
+canvas {
+    width: 500px;
+    height: 500px;
+    background-color: white;
+    border-style: solid;
+    margin-left: 20px;
+}
+
+body {
+    background-color: blue;
+    margin-left: 30px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+</style>
+
+<body>
+<h2>Pong</h2>
+<p id="result" style="position:absolute; margin-left: 100px; margin-top: 100px;"></p>
+<a href="mainpage.html" style="color: black;">Back to Home</a>
+<br>
+<br>
+<canvas id="canvas" width="500" height="500"></canvas>
+</body>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let y = 50;
+let ballx = 250;
+let bally = 200;
+let tx = 2;
+let ty = 2;
+
+function clear() {
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, 500, 500);
+}
+
+function draw() {
+    ctx.fillStyle = "black";
+    ctx.fillRect(10, y, 20, 100);
+    ctx.fillStyle = "red";
+    ctx.fillRect(ballx, bally, 10, 10);
+}
+
+function render() {
+    clear();
+    draw();
+}
+
+document.addEventListener('keydown', (e) => {
+    switch (e.key) {
+        case 'ArrowUp':
+            if (y > 0) y -= 15;
+            break;
+        case 'ArrowDown':
+            if (y < 400) y += 15;
+            break;
+    }
+    render();
+});
+
+function moveBall() {
+    ballx = ballx + tx;
+    bally = bally + ty;
+
+    if(ballx > 490) {
+        tx = -2;
+    }
+
+    if(bally > 490) {
+        ty = -2;
+    }
+
+    if(bally < 0) {
+        ty = 2;
+    }
+
+    if (ballx <= 30 && ballx >= 10 && bally + 10 >= y && bally <= y + 100 ) {
+        tx = 2;
+    }
+
+    if (ballx < 0) {
+        document.getElementById("result").textContent = "No one is coming to get the ball."
+    }
+}
+
+function loop() {
+    moveBall();
+    render();
+    requestAnimationFrame(loop);
+}
+
+loop();
+</script>
+
+</html>

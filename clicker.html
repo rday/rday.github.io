@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Muffin Clicker</title>
+</head>
+
+<style>
+
+button {
+    background-color: rgba(128, 128, 128, 0.418);
+    color: white;
+    padding: 30px;
+    font-size: 20px;
+    border-style: solid;
+    border-color: black;
+}
+
+body {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-color: blue;
+}
+.button {
+    text-align: center;
+}
+
+button:hover {
+
+    background-color: gray;
+}
+
+h2 {
+    margin-left: 20px;
+}
+</style>
+<body>
+<audio src="notification.mp3" id="clickSound"></audio>
+<h2>Clicker</h2>
+<a href="mainpage.html" style="color: black;">Back to Home</a>
+<div class="button">
+<button id="main">Click</button>
+<p id="score" style="font-size: 20px;">Money: 0</p>
+</div>
+
+</body>
+<script>
+
+let x = 0;
+document.getElementById("main").addEventListener('click', click);
+Audio
+function click() {
+    playOverlappingSound('notification.mp3');
+    x += 1;
+    document.getElementById("score").textContent = "Money: " + x;
+};
+
+function playOverlappingSound(src) {
+  const sound = new Audio(src);
+  sound.play();
+}
+
+
+
+</script>
+</html>
