@@ -1,0 +1,117 @@
+<html>
+
+<style>
+
+    body {
+
+        background-color: blue;
+    }
+</style>
+<body>
+<h1>Runner</h1>
+<canvas id="canvas" style="width: 1000px; height: 500px; background-color: white; image-rendering: pixelated;"></canvas>
+</body>
+
+<style>
+canvas {
+    width: 1000px;
+    height: 300px;
+    border: 1px solid black;
+}
+</style>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = 1000;
+canvas.height = 300;
+
+ctx.imageSmoothingEnabled = false;
+
+// player
+let yPos = 90;
+let yV = 0;
+
+// spikes
+let spikes = [
+    { x: 600, w: 20, h: 20 },
+    { x: 900, w: 20, h: 20 },
+    { x: 1200, w: 20, h: 20 }
+];
+
+const gravity = 0.3;
+const groundY = 100;
+
+window.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") {
+        if (yPos >= 90) {
+            yV = -6;
+        }
+    }
+});
+
+function physics() {
+    yV += gravity;
+    yPos += yV;
+
+    if (yPos > 90) {
+        yPos = 90;
+        yV = 0;
+    }
+
+    // move spikes left
+    for (let s of spikes) {
+        s.x -= 4;
+
+        // reset spike when off screen
+        if (s.x < -20) {
+            s.x = 1000 + Math.random() * 500;
+        }
+
+        // collision
+        if (
+            s.x < 60 &&
+            s.x + s.w > 50 &&
+            yPos + 10 > groundY
+        ) {
+            console.log("hit spike");
+        }
+    }
+}
+
+function draw() {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // sky
+    ctx.fillStyle = "cyan";
+    ctx.fillRect(0, 0, 1000, 100);
+
+    // ground
+    ctx.fillStyle = "gray";
+    ctx.fillRect(0, groundY, 1000, 200);
+
+    // player
+    ctx.fillStyle = "black";
+    ctx.fillRect(50, yPos, 10, 10);
+
+    // spikes
+    ctx.fillStyle = "red";
+    for (let s of spikes) {
+        ctx.beginPath();
+        ctx.moveTo(s.x, groundY);
+        ctx.lineTo(s.x + s.w / 2, groundY - s.h);
+        ctx.lineTo(s.x + s.w, groundY);
+        ctx.fill();
+    }
+}
+
+function loop() {
+    physics();
+    draw();
+    requestAnimationFrame(loop);
+}
+
+loop();
+</script>

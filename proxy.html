@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web Gateway</title>
+
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+
+    input {
+      width: 80%;
+      max-width: 500px;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 20px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Web Gateway</h1>
+
+  <input id="url" placeholder="Enter a URL">
+
+  <br>
+
+  <button onclick="go()">Go</button>
+
+  <script>
+    function go() {
+      const url = document.getElementById("url").value.trim();
+
+      if (!url) {
+        return;
+      }
+
+      window.location.href =
+        "http://localhost:3000/proxy?url=" +
+        encodeURIComponent(url);
+    }
+  </script>
+
+</body>
+</html>

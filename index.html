@@ -1,360 +1,66 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Geography 2TA1L</title>
-
 <style>
-h2 {
-    text-align: center;
-    display: inline;
-    font-size: 30px;
-    text-shadow: -2px 2px rgb(0, 0, 0);
-}
 
 body {
-    background-image: url(vaporwave.png);
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-image: linear-gradient(to right, #04131c 0%, #06291e 51%, #172004 100%);
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-align: center;
+    color:#81ab25;
 }
+
+b {
+        text-shadow: 0 0 25px #368f2c;
+    font-size: 80px;
+}
+
 button {
-    background-color: rgba(0, 0, 0, 0.493);
-    text-align: center;
-    border-style: solid;
-    border-color: white;
-    border-width: 3px;
-    padding: 10px;
+  background-image: linear-gradient(to right, #2b766b 0%, #437645 51%, #76712b 100%);
+  margin: 10px;
+  padding: 15px 45px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  box-shadow: 0 0 20px #368f2c;
+  border-radius: 10px;
+  outline: none; 
+  border: none;
+}
+
+a {
+
     color: white;
-}
-.content {
-    margin-left: 20%;
-    margin-right: 20%;
-    background-color: rgba(71, 63, 141, 0.968);
-    height: 100%;
-    padding: 30px;
-    text-align: center;
+    text-decoration: none;
+    font-weight:bold;
 }
 
-p {
-    font-size: 20px;
+iframe {
+     box-shadow: 0 0 20px #368f2c;
+    margin-left: 0.5%;
+    margin-right: 0.5%;
 }
 
-.game {
-    width: 80%;
-    height: 500px;
-    margin-left: 10%;
-    margin-right: 10%;
-    background-color: white;
-    border-style: solid;
-}
-
-h3 {
-    text-align: center;
-}
-
-.buttons {
-    margin-left: 20%;
-    margin-right: 20%;
-    display: flex;
-    gap: 33%;
-    text-align: center;
-}
-
-.button {
-    background-color: white;
-}
-
-button:hover {
-    background-color: rgba(116, 110, 170, 0.968);
-}
-
-h4 {
-    font-size: 32px;
-}
-
-.streak {
-    color: red;
-}
-
-.shadow {
-    text-shadow: -1px 1px rgb(87, 40, 112);
+hr {
     color: white;
 }
 </style>
-</head>
-
-<body>
-
-    <div class="content">
-    <h2 style="color: green;">TWO TRUTHS AND </h2> <h2 style="color: #ff0606;"> A LIE</h2>
-    <p class="shadow">In this game, you are given three statements about the geography of a country. Two are correct,
-        but one is false. Figure out which one is wrong and try to get as high a streak as possible.
-    </p>
-    <button>Start Game</button>
-
-    <br>
-    <br>
-
-    <div class="game">
-        <h3 id="country"></h3> <!--- this will say the country name-->
-        <p id="s1"></p> <!--- statement 1 and so on-->
-        <p id="s2"></p>
-        <p id="s3"></p>
-        <h3 id="statement"></h3> 
-        <div class="buttons">
-            <button id="b1" class="button"></button>
-            <button id="b2" class="button"></button>
-            <button id="b3" class="button"></button>
-        </div>
-        <h4 id="results"></h4>
-        <p id="streak" class="streak"></p>
-    </div>
-
-    </div>
-</body>
 
 
-<script>
-    const countries = {
+<b>Ethereal Division</b>
 
-        "Japan 🇯🇵": {
-            truths: [
-                "Mount Fuji is located in Japan.",
-                "Japan has over 100 million people.",
-                "Japan's closest neighbor is Russia.",
-                "Japan records hundreds of earthquakes every year.",
-                "The main island of Japan is called Honshu."
-            ],
-            lies : [
-                "The capital of Japan, Tokyo, is located in the very south.",
-                "Japan borders the Yellow Sea.",
-                "Japan has a land border with South Korea."
-            ]
-        },
+<br>
+<br>
+<br>
 
-        "France 🇫🇷": {
-            truths: [
-                "France is in Western Europe.",
-                "France borders Germany.",
-                "France is the largest country in the European Union (geographically).",
-                "The capital city of France, Paris, is not on the coast.",
-                "France contains part of the Alps mountain range."
-            ],
-            lies : [
-                "France goes further north than the Netherlands.",
-                "The north part of France has more mountains than the south.",
-                "France owns two large islands in the Mediterranean Sea."
-            ]
-        },
+<iframe style="border: 0; width: 350px; height: 470px;" src="https://bandcamp.com/EmbeddedPlayer/album=3487841548/size=large/bgcol=333333/linkcol=e99708/tracklist=false/transparent=true/" seamless><a href="https://etherealdivision.bandcamp.com/album/terminal-coast">Terminal Coast by Ethereal Division</a></iframe>
+<br>
+<br>
 
-        "Canada 🇨🇦": {
-            truths: [
-                "Part of the Great Plains is in Canada.",
-                "Canada's only land border is with the U.S.",
-                "Canada is the northernmost country in North America.",
-                "Many provinces in Eastern Canada, like Quebec, speak French.",
-                "Canada has the most lakes of any country."
-            ],
-            lies : [
-                "Canada is most populated towards the Pacific coast.",
-                "The capital of Canada is Toronto.",
-                "Canada goes as far south as Ohio."
-            ]
-        },
+<button><a href="https://www.youtube.com/@etherealdivision">Listen on YouTube</a></button>
+<button><a href="https://soundcloud.com/atticus-duran/moonchime-11">Listen on SoundCloud</a></button>
+<br>
+<br>
 
-        "Russia 🇷🇺": {
-            truths: [
-                "The Russian national currency is the Ruble.",
-                "Lake Baikal in Siberia is the largest lake entirely surrounded by one country.",
-                "European Russia is bigger than India.",
-                "Russia has some deserts.",
-                "Russia has a maritime border with the U.S."
-            ],
-            lies : [
-                "Russia borders only 9 countries.",
-                "The Cyrillic alphabet that Russia uses started in Russia.",
-                "Russia does not reach the Baltic sea."
-            ]
-        },
+<hr>
 
-        "Peru 🇵🇪": {
-            truths: [
-                "Peru contains some of the Andes mountain range.",
-                "The famous historical site Machu Picchu is in Peru.",
-                "The capital of Peru, Lima, is on the coast.",
-                "Peru has about 34 million people.",
-                "Cusco in Peru was the capital of the Incan Empire."
-            ],
-            lies : [
-                "Peru has a low average elevation.",
-                "Peru does not contain the Amazon Rainforest.",
-                "Peru crosses the equator."
-            ]
-        },
-        "Australia 🇦🇺": {
-            truths: [
-                "Australia is wider than the moon.",
-                "The Great Barrier Reef to the northwest can be seen from space.",
-                "Canberra is the capital of Australia.",
-                "Sydney is closer to New Zealand than the east coast.",
-                "The city of Adelaide is close to the latitude of the southernmost point of Africa."
-            ],
-            lies : [
-                "Australia is the only continent with no active volcanoes.",
-                "Melbourne, a city in the far south, gets a lot of snow.",
-                "Australia has no natural lakes."
-            ]
-        },
-        "China 🇨🇳": {
-            truths: [
-                "China is the second most populated country.",
-                "China only has 1 time zone.",
-                "China is the second largest country.",
-                "China has the most megacities of any country.",
-                "China borders 14 countries."
-            ],
-            lies : [
-                "Shanghai is the capital of China.",
-                "China is largely tropical.",
-                "The most common language in China is Cantonese."
-            ]
-        },
-        "Mexico 🇲🇽": {
-            truths: [
-                "Mexico has the longest coastline on the Gulf of Mexico.",
-                "Ciudad de Juarez in Mexico is the largest city on the US-Mexican border.",
-                "Mexico City was built on top of a lake on the ruins of the former capital.",
-                "The tallest mountain in Mexico is over 18,000 feet high.",
-                "The Baja California peninsula is over 770 miles long."
-            ],
-            lies : [
-                "Mexico's largest state, Chihuahua, is entirely desert.",
-                "There are no major cities in central Mexico.",
-                "Mexico has the tallest mountain on the North American continent."
-            ]
-        },
-        "India 🇮🇳": {
-            truths: [
-                "The Thar Desert in northwestern India is the world's most densely populated desert.",
-                "India is home to the world's rainiest village.",
-                "India borders the Arabian sea.",
-                "India contains part of the Himalayan mountain range.",
-                "India is about 20% forested."
-            ],
-            lies : [
-                "India's longest border is with China.",
-                "India borders Afghanistan.",
-                "The most populated part of India is the central tropics."
-            ]
-        },
-        "Indonesia 🇮🇩": {
-            truths: [
-                "Indonesia is wide enough to stretch from Portugal to Iran.",
-                "The biggest city, Jakarta, is also the capital.",
-                "The most populated island, Java, has around 150 million people.",
-                "Indonesia borders Malaysia on the island of Borneo.",
-                "Indonesia has territory of 3 of the world's 6 biggest islands."
-            ],
-            lies : [
-                "Indonesia is the only country in Asia to be south of the equator.",
-                "Indonesia has only 1 land border.",
-                "The city of Jakarta is on the south coast of Java."
-            ]
-        },
-        "Morocco 🇲🇦": {
-            truths: [
-                "Morocco has multiple land borders with Spain.",
-                "Morocco is on the Strait of Gibraltar.",
-                "The territory Western Sahara is part of Morocco.",
-                "Morocco is mostly Arabic.",
-                "This is the only country with both Atlantic and Mediterranean coastline in Africa."
-            ],
-            lies : [
-                "Morocco mostly consists of the Sahara desert.",
-                "Morocco is in the Middle East.",
-                "Morocco is a predominantly flat nation."
-            ]
-        },
-        "Egypt 🇪🇬": {
-            truths: [
-                "Egypt is on the Red Sea.",
-                "The Sinai Peninsula is in Egypt.",
-                "Egypt has the mouth of the Nile River.",
-                "Egypt is in Northeast Africa.",
-                "Egypt has the Suez Canal."
-            ],
-            lies : [
-                "Egypt borders Saudi Arabia.",
-                "The capital, Cairo, is in the Sahara Desert.",
-                "Egypt is to the west of Libya."
-            ]
-        },
-    }
-
-    document.querySelector("button").addEventListener("click", startGame);
-
-    function startGame() {
-        document.getElementById("results").textContent = "";
-
-        const countryNames = Object.keys(countries);
-        const countryName = countryNames[Math.floor(Math.random() * countryNames.length)];
-        const country = countries[countryName];
-
-// i did not write this line it apparently makes it so the two truths wont repeat
-  const shuffledTruths = [...country.truths].sort(() => Math.random() - 0.5);
-
-  const truth1 = shuffledTruths[0];
-  const truth2 = shuffledTruths[1];
-  const lie = country.lies[Math.floor(Math.random() * country.lies.length)];
-  const statements = [truth1, truth2, lie]
-
-  // this shuffles it
-   statements.sort(() => Math.random() - 0.5);
-         
-  document.getElementById("country").textContent = countryName;
-  document.getElementById("s1").textContent = statements[0];
-  document.getElementById("s2").textContent = statements[1];
-  document.getElementById("s3").textContent = statements[2];
-  document.getElementById("statement").textContent = "Which statement is incorrect?"
-
-  correctAnswer = statements.indexOf(lie) + 1;
-
-  // button stuff
-document.getElementById("b1").style.backgroundColor = "gray";
-document.getElementById("b2").style.backgroundColor = "gray";
-document.getElementById("b3").style.backgroundColor = "gray";
-  document.getElementById("b1").textContent = "#1";
-document.getElementById("b2").textContent = "#2";
-document.getElementById("b3").textContent = "#3";
-}
-
-let correctAnswer;
-
-
-document.getElementById("b1").addEventListener("click", function () {
-  checkAnswer(1);
-});
-document.getElementById("b2").addEventListener("click", function () {
-  checkAnswer(2);
-});
-document.getElementById("b3").addEventListener("click", function () {
-  checkAnswer(3);
-});
-let streak = 0;
-
-function checkAnswer(choice) {
-  if (choice === correctAnswer) {
-    document.getElementById("results").textContent = "Correct!";
-    streak += 1;
-    document.getElementById("streak").textContent = "Current streak: " + streak;
-  } else {
-    document.getElementById("results").textContent = "Wrong!";
-    streak = 0;
-    document.getElementById("streak").textContent = "Current streak: " + streak;
-  }
-  setTimeout(() => {
-    startGame();
-  }, 2000);
-}
-
-</script>
-</html>
+<h5> Contact: etherealdivision2024@gmail.com</h5>
